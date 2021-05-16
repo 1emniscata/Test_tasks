@@ -68,6 +68,7 @@ class QuerySet:
         """Just goes to site."""
         self.browser.get(self.site)
         print("I successfully got to the site")
+        print('')
         self.browser.implicitly_wait(3)
         self.browser.execute_script('window.scrollTo(0,document.body.scrollHeight);')
         self.browser.implicitly_wait(3)
@@ -139,12 +140,15 @@ class QuerySet:
         if code == '200':
             print('---Test CREATE passed successfully')
             print(f'The user <{model_data_json[fields_list[1]]}> created')
+            print('')
         elif code == '400':
-            print('Invalid username supplied')
+            print(f'Invalid username supplied for <{model_data_json[fields_list[1]]}>')
+            print('')
         elif code == '404':
-            print('User not found')
+            print(f'User <{model_data_json[fields_list[1]]}> not found')
+            print('')
 
-        time.sleep(5)
+        # time.sleep(5)
         cancel_button_link = '/html/body/div[1]/section/div[2]/div[2]/div[4]/section/div/' \
                              'span[3]/div/div/div/span[8]/div/div[2]/div/div[2]/div[1]/' \
                              'div[2]/button'
@@ -156,7 +160,7 @@ class QuerySet:
         close_create_div = self.browser.find_element_by_xpath(close_create_div_link)
         close_create_div.click()
 
-    def test_read(self):
+    def test_read(self, username=None):
         """
         Checks if a user can be got.
         Prints that test passed successfully in case if the code of response == 200.
@@ -178,25 +182,50 @@ class QuerySet:
                               'tr/td[2]/input'
         username_input = self.browser.find_element_by_xpath(username_input_link)
         username_input.click()
-        username_input.send_keys(self.__username)
+        username_input.clear()
+        if username is None:
+            username_input.send_keys(self.__username)
+            username_for_print = self.__username
+        else:
+            username_input.send_keys(username)
+            username_for_print = username
         # time.sleep(3)
         self.browser.implicitly_wait(3)
 
-        execute_button = '/html/body/div[1]/section/div[2]/div[2]/div[4]/section/div/span[3]/' \
-                         'div/div/div/span[8]/div/div[2]/div/div[3]/button'
+        execute_button = '/html/body/div/section/div[2]/div[2]/div[4]/section/div/span[3]/div/' \
+                         'div/div/span[2]/div/div[2]/div/div[2]/button'
         self.browser.find_element_by_xpath(execute_button).click()
         # time.sleep(10)
         self.browser.implicitly_wait(3)
 
-        code_link = '/html/body/div/section/div[2]/div[2]/div[4]/section/div/span[3]/div/div/' \
-                    'div/span[2]/div/div[2]/div/div[3]/div[2]/table/tbody/tr[1]/td[1]'
+        code_link = '/html/body/div/section/div[2]/div[2]/div[4]/section/div/span[3]/div/div/div/' \
+                    'span[2]/div/div[2]/div/div[3]/div[2]/div/div/table/tbody/tr/td[1]'
         code = self.browser.find_element_by_xpath(code_link).text
+        # print(code)
         if code == '200':
             print('---Test READ passed successfully')
+            print(f'The user <{username_for_print}> is accessible')
+            print('')
         elif code == '400':
-            print('Invalid username supplied')
+            print(f'Invalid username supplied for <{username_for_print}>')
+            print('')
         elif code == '404':
-            print('User not found')
+            print('WARNING ' * 7)
+            print('!!!Test READ failed')
+            print(f'User <{username_for_print}> not found')
+            # print('')
+            print('WARNING ' * 7)
+            print('')
+
+        cancel_button_link = '/html/body/div/section/div[2]/div[2]/div[4]/section/div/span[3]/div/' \
+                             'div/div/span[2]/div/div[2]/div/div[1]/div[1]/div[2]/button'
+        cancel_button = self.browser.find_element_by_xpath(cancel_button_link)
+        cancel_button.click()
+
+        close_create_div_link = '/html/body/div/section/div[2]/div[2]/div[4]/section/div/span[3]/' \
+                                'div/div/div/span[2]/div/div[1]'
+        close_create_div = self.browser.find_element_by_xpath(close_create_div_link)
+        close_create_div.click()
 
     def test_login(self):
         """
@@ -381,9 +410,11 @@ first_test = QuerySet(1, '1emniscata', 'Alex', 'Suzen', 'alex@gmail.com', '123',
 first_test.go_to_site()
 first_test.test_create()
 first_test.test_create(3, 'person', 'Kolya', 'Ivanov', 'koly@gmail.com', '456', '45678')
-# first_test.test_read()
+first_test.test_read()
+first_test.test_read('person')
+first_test.test_read('rrr')
 # first_test.test_login()
 # first_test.test_update(userid=2, lastname='AAA')
 # first_test.test_delete()
 # first_test.test_delete()
-# first_test.close_browser()
+first_test.close_browser()
