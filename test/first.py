@@ -58,7 +58,7 @@ class QuerySet:
 
         self.options = webdriver.ChromeOptions()
         self.options.add_argument("--disable-blink-features=AutomationControlled")
-        self.options.add_argument("--headless")
+        # self.options.add_argument("--headless")
 
         self.browser = webdriver.Chrome(executable_path='/home/alex/test/chromedriver/chromedriver',
                                         options=self.options)
@@ -72,7 +72,8 @@ class QuerySet:
         self.browser.execute_script('window.scrollTo(0,document.body.scrollHeight);')
         self.browser.implicitly_wait(3)
 
-    def test_create(self):
+    def test_create(self, userid=None, username=None, firstname=None, lastname=None, email=None,
+                    password=None, phone=None):
         """
         Checks if a brand new user can be created.
         Prints that test passed successfully in case if the code of response == 200.
@@ -104,11 +105,20 @@ class QuerySet:
         fields_list = ["id", "username", "firstName", "lastName", "email", "password", "phone"]
         args_list = [self.__id, self.__username, self.__firstname, self.__lastname, self.__email,
                      self.__password, self.__phone]
+        func_args = [userid, username, firstname, lastname, email, password, phone]
         # for i in range(len(fields_list)):
         #     model_data_json[fields_list[i]] = args_list[i]
+        # for i, field in enumerate(fields_list):
+        #     model_data_json[field] = args_list[i]
+        # model_data_str_new = json.dumps(model_data_json, indent=2)
+
         for i, field in enumerate(fields_list):
-            model_data_json[field] = args_list[i]
+            if func_args[i] is None:
+                model_data_json[field] = args_list[i]
+            else:
+                model_data_json[field] = func_args[i]
         model_data_str_new = json.dumps(model_data_json, indent=2)
+
         # print(model_data_str_new)
         # time.sleep(3)
         self.browser.implicitly_wait(3)
@@ -120,16 +130,31 @@ class QuerySet:
         execute_button = '/html/body/div[1]/section/div[2]/div[2]/div[4]/section/div/span[3]/' \
                          'div/div/div/span[8]/div/div[2]/div/div[3]/button'
         self.browser.find_element_by_xpath(execute_button).click()
-        time.sleep(10)
+        # time.sleep(10)
+        self.browser.implicitly_wait(3)
+
         code_link = '/html/body/div/section/div[2]/div[2]/div[4]/section/div/span[3]/div/div/' \
                     'div/span[8]/div/div[2]/div/div[4]/div[2]/div/div/table/tbody/tr/td[1]'
         code = self.browser.find_element_by_xpath(code_link).text
         if code == '200':
             print('---Test CREATE passed successfully')
+            print(f'The user <{model_data_json[fields_list[1]]}> created')
         elif code == '400':
             print('Invalid username supplied')
         elif code == '404':
             print('User not found')
+
+        time.sleep(5)
+        cancel_button_link = '/html/body/div[1]/section/div[2]/div[2]/div[4]/section/div/' \
+                             'span[3]/div/div/div/span[8]/div/div[2]/div/div[2]/div[1]/' \
+                             'div[2]/button'
+        cancel_button = self.browser.find_element_by_xpath(cancel_button_link)
+        cancel_button.click()
+
+        close_create_div_link = '/html/body/div/section/div[2]/div[2]/div[4]/section/div/span[3]/' \
+                                'div/div/div/span[8]/div/div[1]'
+        close_create_div = self.browser.find_element_by_xpath(close_create_div_link)
+        close_create_div.click()
 
     def test_read(self):
         """
@@ -355,9 +380,10 @@ class QuerySet:
 first_test = QuerySet(1, '1emniscata', 'Alex', 'Suzen', 'alex@gmail.com', '123', '12345')
 first_test.go_to_site()
 first_test.test_create()
-first_test.test_read()
+first_test.test_create(3, 'person', 'Kolya', 'Ivanov', 'koly@gmail.com', '456', '45678')
+# first_test.test_read()
 # first_test.test_login()
-first_test.test_update(userid=2, lastname='AAA')
-first_test.test_delete()
+# first_test.test_update(userid=2, lastname='AAA')
 # first_test.test_delete()
-first_test.close_browser()
+# first_test.test_delete()
+# first_test.close_browser()
