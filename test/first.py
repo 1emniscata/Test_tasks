@@ -55,6 +55,7 @@ class QuerySet:
         self.__email = email
         self.__password = password
         self.__phone = phone
+        self.list_of_users = [self.__username]
 
         self.options = webdriver.ChromeOptions()
         self.options.add_argument("--disable-blink-features=AutomationControlled")
@@ -79,11 +80,8 @@ class QuerySet:
         Checks if a brand new user can be created.
         Prints that test passed successfully in case if the code of response == 200.
         """
-        self.browser.implicitly_wait(3)
-        self.browser.execute_script('window.scrollTo(0,document.body.scrollHeight/6);')
-        # time.sleep(2)
-        self.browser.implicitly_wait(5)
-
+        if username is not None:
+            self.list_of_users.append(username)
         create_div = '/html/body/div[1]/section/div[2]/div[2]/div[4]/section/div/span[3]/div/' \
                      'div/div/span[8]/div/div'
         self.browser.find_element_by_xpath(create_div).click()
@@ -217,8 +215,8 @@ class QuerySet:
             print('WARNING ' * 7)
             print('')
 
-        cancel_button_link = '/html/body/div/section/div[2]/div[2]/div[4]/section/div/span[3]/div/' \
-                             'div/div/span[2]/div/div[2]/div/div[1]/div[1]/div[2]/button'
+        cancel_button_link = '/html/body/div/section/div[2]/div[2]/div[4]/section/div/span[3]/' \
+                             'div/div/div/span[2]/div/div[2]/div/div[1]/div[1]/div[2]/button'
         cancel_button = self.browser.find_element_by_xpath(cancel_button_link)
         cancel_button.click()
 
@@ -285,7 +283,7 @@ class QuerySet:
             print('User not found')
 
     def test_update(self, userid=None, username=None, firstname=None, lastname=None, email=None,
-                    password=None, phone=None):
+                    password=None, phone=None, other_username=None):
         """
         Checks if a user can be updated.
         Prints that test passed successfully in case if the code of response == 200.
@@ -307,7 +305,14 @@ class QuerySet:
                               'tr[1]/td[2]/input'
         username_input = self.browser.find_element_by_xpath(username_input_link)
         username_input.click()
-        username_input.send_keys(self.__username)
+        # username_input.send_keys(self.__username)
+        username_input.clear()
+        if other_username is None:
+            username_input.send_keys(self.__username)
+            username_for_print = self.__username
+        else:
+            username_input.send_keys(other_username)
+            username_for_print = other_username
         # time.sleep(3)
         self.browser.implicitly_wait(3)
 
@@ -342,25 +347,48 @@ class QuerySet:
         # time.sleep(10)
         self.browser.implicitly_wait(5)
 
-        code_link = '/html/body/div/section/div[2]/div[2]/div[4]/section/div/span[3]/div/div/' \
-                    'div/span[3]/div/div[2]/div/div[4]/div[2]/div/div/table/tbody/tr/td[1]'
+        code_link = '/html/body/div/section/div[2]/div[2]/div[4]/section/div/span[3]/div/' \
+                    'div/div/span[3]/div/div[2]/div/div[4]/div[2]/div/div/table/tbody/' \
+                    'tr/td[1]'
         code = self.browser.find_element_by_xpath(code_link).text
         # print(code)
         self.browser.implicitly_wait(5)
         if code[:3] == '200':
-            print('---Test UPDATE passed successfully')
+            if username_for_print in self.list_of_users:
+                print('---Test UPDATE passed successfully')
+                print(f'The user <{username_for_print}> can be updated')
+            else:
+                print("---!!!Test UPDATE passed, but the user didn't exist before")
+                print(f'The user <{username_for_print}> has been created')
+            print('')
         elif code[:3] == '400':
-            print('Invalid username supplied')
-        elif code[:3] == '404':
-            print('User not found')
+            print(f'Invalid username supplied for <{username_for_print}>')
+            print('')
+        elif code[:3] == '404':  # What's the need in it there?
+            print('WARNING ' * 7)
+            print('!!!Test UPDATE failed')
+            print(f'User <{username_for_print}> not found')
+            # print('')
+            print('WARNING ' * 7)
+            print('')
 
-    def test_delete(self):
+        cancel_button_link = '/html/body/div/section/div[2]/div[2]/div[4]/section/div/span[3]/' \
+                             'div/div/div/span[3]/div/div[2]/div/div[2]/div[1]/div[2]/button'
+        cancel_button = self.browser.find_element_by_xpath(cancel_button_link)
+        cancel_button.click()
+
+        close_create_div_link = '/html/body/div/section/div[2]/div[2]/div[4]/section/div/' \
+                                'span[3]/div/div/div/span[3]/div/div[1]'
+        close_create_div = self.browser.find_element_by_xpath(close_create_div_link)
+        close_create_div.click()
+
+    def test_delete(self, username=None):
         """
         Checks if a user can be deleted.
         Prints that test passed successfully in case if the code of response == 200.
         """
-        delete_div = '/html/body/div/section/div[2]/div[2]/div[4]/section/div/span[3]/div/div/' \
-                     'div/span[4]/div/div'
+        delete_div = '/html/body/div/section/div[2]/div[2]/div[4]/section/div/span[3]/' \
+                     'div/div/div/span[4]/div/div'
         self.browser.find_element_by_xpath(delete_div).click()
         # time.sleep(5)
         self.browser.implicitly_wait(3)
@@ -376,12 +404,19 @@ class QuerySet:
                               'tr/td[2]/input'
         username_input = self.browser.find_element_by_xpath(username_input_link)
         username_input.click()
-        username_input.send_keys(self.__username)
+        # username_input.send_keys(self.__username)
+        username_input.clear()
+        if username is None:
+            username_input.send_keys(self.__username)
+            username_for_print = self.__username
+        else:
+            username_input.send_keys(username)
+            username_for_print = username
         # time.sleep(3)
         self.browser.implicitly_wait(3)
 
-        execute_button = '/html/body/div/section/div[2]/div[2]/div[4]/section/div/span[3]/' \
-                         'div/div/div/span[4]/div/div[2]/div/div[3]/button'
+        execute_button = '/html/body/div/section/div[2]/div[2]/div[4]/section/div/span[3]/div/div/' \
+                         'div/span[4]/div/div[2]/div/div[3]/button[1]'
         self.browser.find_element_by_xpath(execute_button).click()
         # time.sleep(10)
         self.browser.implicitly_wait(3)
@@ -391,10 +426,28 @@ class QuerySet:
         code = self.browser.find_element_by_xpath(code_link).text
         if code[:3] == '200':
             print('---Test DELETE passed successfully')
+            print(f'The user <{username_for_print}> can be deleted')
         elif code[:3] == '400':
             print('Invalid username supplied')
         elif code[:3] == '404':
-            print('User not found')
+
+            print('WARNING ' * 7)
+            print('!!!Test DELETE failed')
+            print(f'User <{username_for_print}> not found')
+            # print('')
+            print('WARNING ' * 7)
+        print('')
+
+        cancel_button_link = '/html/body/div/section/div[2]/div[2]/div[4]/section/div/' \
+                             'span[3]/div/div/div/span[4]/div/div[2]/div/div[2]/div[1]/' \
+                             'div[2]/button'
+        cancel_button = self.browser.find_element_by_xpath(cancel_button_link)
+        cancel_button.click()
+
+        close_create_div_link = '/html/body/div/section/div[2]/div[2]/div[4]/section/div/' \
+                                'span[3]/div/div/div/span[4]/div/div[1]'
+        close_create_div = self.browser.find_element_by_xpath(close_create_div_link)
+        close_create_div.click()
 
     def close_browser(self):
         """Just closes the browser."""
@@ -414,7 +467,12 @@ first_test.test_read()
 first_test.test_read('person')
 first_test.test_read('rrr')
 # first_test.test_login()
-# first_test.test_update(userid=2, lastname='AAA')
-# first_test.test_delete()
-# first_test.test_delete()
+first_test.test_update(userid=2, lastname='AAA')
+first_test.test_update(userid=4, lastname='BBB', other_username='person')
+first_test.test_update(userid=5, username='no', lastname='CCC', other_username='no')
+first_test.test_delete()
+first_test.test_delete(username='1emniscata')
+first_test.test_delete(username='person')
+first_test.test_read()  # Still possible to get "1emniscata"
+first_test.test_read('person')
 first_test.close_browser()
