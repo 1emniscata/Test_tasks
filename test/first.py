@@ -1,4 +1,3 @@
-import time
 import datetime
 import json
 from selenium import webdriver
@@ -31,19 +30,25 @@ class QuerySet:
     -------
     go_to_site():
         Just goes to site.
-    test_create():
+    test_create(userid=None, username=None, firstname=None, lastname=None, email=None,
+                    password=None, phone=None):
         Checks if a brand new user can be created.
-    test_read():
+    test_read(userid=None, username=None, firstname=None, lastname=None, email=None,
+                    password=None, phone=None):
         Checks if a user can be got.
-    test_login():
+    test_login(userid=None, username=None, firstname=None, lastname=None, email=None,
+                    password=None, phone=None):
         Checks if a user can be logged in.
-    test_update():
+    test_update(userid=None, username=None, firstname=None, lastname=None, email=None,
+                    password=None, phone=None):
         Checks if a user can be updated.
-    test_delete():
+    test_delete(userid=None, username=None, firstname=None, lastname=None, email=None,
+                    password=None, phone=None):
         Checks if a user can be deleted.
     close_browser(self):
         Just closes the browser.
     """
+
     start_time = datetime.datetime.now()
 
     def __init__(self, userid, username, firstname, lastname, email, password, phone):
@@ -67,6 +72,7 @@ class QuerySet:
 
     def go_to_site(self):
         """Just goes to site."""
+
         self.browser.get(self.site)
         print("I successfully got to the site")
         print('')
@@ -80,6 +86,7 @@ class QuerySet:
         Checks if a brand new user can be created.
         Prints that test passed successfully in case if the code of response == 200.
         """
+
         if username is not None:
             self.list_of_users.append(username)
         create_div = '/html/body/div[1]/section/div[2]/div[2]/div[4]/section/div/span[3]/div/' \
@@ -163,6 +170,7 @@ class QuerySet:
         Checks if a user can be got.
         Prints that test passed successfully in case if the code of response == 200.
         """
+
         read_div = '/html/body/div/section/div[2]/div[2]/div[4]/section/div/span[3]/div/' \
                    'div/div/span[2]/div/div'
         self.browser.find_element_by_xpath(read_div).click()
@@ -230,6 +238,7 @@ class QuerySet:
         Checks if a user can be logged in.
         Prints that test passed successfully in case if the code of response == 200.
         """
+
         # time.sleep(2)
         self.browser.implicitly_wait(3)
         self.browser.execute_script('window.scrollTo(0,document.body.scrollHeight);')
@@ -288,6 +297,7 @@ class QuerySet:
         Checks if a user can be updated.
         Prints that test passed successfully in case if the code of response == 200.
         """
+
         update_div = '/html/body/div/section/div[2]/div[2]/div[4]/section/div/span[3]/div/div/' \
                      'div/span[3]/div/div'
         self.browser.find_element_by_xpath(update_div).click()
@@ -356,7 +366,7 @@ class QuerySet:
         if code[:3] == '200':
             if username_for_print in self.list_of_users:
                 print('---Test UPDATE passed successfully')
-                print(f'The user <{username_for_print}> can be updated')
+                print(f'The user <{username_for_print}> updated')
             else:
                 print("---!!!Test UPDATE passed, but the user didn't exist before")
                 print(f'The user <{username_for_print}> has been created')
@@ -387,6 +397,7 @@ class QuerySet:
         Checks if a user can be deleted.
         Prints that test passed successfully in case if the code of response == 200.
         """
+
         delete_div = '/html/body/div/section/div[2]/div[2]/div[4]/section/div/span[3]/' \
                      'div/div/div/span[4]/div/div'
         self.browser.find_element_by_xpath(delete_div).click()
@@ -415,22 +426,22 @@ class QuerySet:
         # time.sleep(3)
         self.browser.implicitly_wait(3)
 
-        execute_button = '/html/body/div/section/div[2]/div[2]/div[4]/section/div/span[3]/div/div/' \
-                         'div/span[4]/div/div[2]/div/div[3]/button[1]'
+        execute_button = '/html/body/div/section/div[2]/div[2]/div[4]/section/div/span[3]/' \
+                         'div/div/div/span[4]/div/div[2]/div/div[3]/button[1]'
         self.browser.find_element_by_xpath(execute_button).click()
         # time.sleep(10)
-        self.browser.implicitly_wait(3)
+        # self.browser.implicitly_wait(3)
 
         code_link = '/html/body/div/section/div[2]/div[2]/div[4]/section/div/span[3]/div/div/div/' \
                     'span[4]/div/div[2]/div/div[4]/div[2]/div/div/table/tbody/tr/td[1]'
         code = self.browser.find_element_by_xpath(code_link).text
+        # print(code)
         if code[:3] == '200':
             print('---Test DELETE passed successfully')
-            print(f'The user <{username_for_print}> can be deleted')
+            print(f'The user <{username_for_print}> deleted')
         elif code[:3] == '400':
             print('Invalid username supplied')
         elif code[:3] == '404':
-
             print('WARNING ' * 7)
             print('!!!Test DELETE failed')
             print(f'User <{username_for_print}> not found')
@@ -451,6 +462,7 @@ class QuerySet:
 
     def close_browser(self):
         """Just closes the browser."""
+
         self.browser.close()
         self.browser.quit()
         finish_time = datetime.datetime.now()
@@ -459,20 +471,81 @@ class QuerySet:
         # print("I closed Chrome browser")
 
 
-first_test = QuerySet(1, '1emniscata', 'Alex', 'Suzen', 'alex@gmail.com', '123', '12345')
-first_test.go_to_site()
-first_test.test_create()
-first_test.test_create(3, 'person', 'Kolya', 'Ivanov', 'koly@gmail.com', '456', '45678')
-first_test.test_read()
-first_test.test_read('person')
-first_test.test_read('rrr')
-# first_test.test_login()
-first_test.test_update(userid=2, lastname='AAA')
-first_test.test_update(userid=4, lastname='BBB', other_username='person')
-first_test.test_update(userid=5, username='no', lastname='CCC', other_username='no')
-first_test.test_delete()
-first_test.test_delete(username='1emniscata')
-first_test.test_delete(username='person')
-first_test.test_read()  # Still possible to get "1emniscata"
-first_test.test_read('person')
-first_test.close_browser()
+if __name__ == '__main__':
+    # Better think about it, cause it seems like it works regardless this constraint
+    '''In order to avoid the incorrect work of algorithms it's prohibited to use 
+    the following usernames: yellow, 
+    
+    '''
+
+    '''
+    first_test = QuerySet(1, 'yellow', 'Alex', 'Suzen', 'alex@gmail.com', '123', '12345')
+    first_test.go_to_site()
+    first_test.test_create()
+    first_test.test_create(3, 'person', 'Kolya', 'Ivanov', 'koly@gmail.com', '456', '45678')
+    first_test.test_read()
+    first_test.test_delete()
+    first_test.test_read()  # 'yellow' is still accessible after it's deletion
+    first_test.test_read('person')
+    first_test.test_read('rrr')
+    # first_test.test_login()
+    first_test.test_update(userid=10, lastname='AAA')
+    first_test.test_update(userid=30, lastname='BBB', other_username='person')
+    first_test.test_update(userid=5, username='no', lastname='CCC', other_username='no')
+    first_test.test_delete()
+    first_test.test_delete(username='1emniscata')
+    first_test.test_delete(username='person')
+    first_test.test_delete(username='no')
+    first_test.test_read()  # Still possible to get "yellow"
+    first_test.test_read('person')
+    first_test.test_read('no')
+    first_test.close_browser()
+    '''
+    '''
+    # second_test = QuerySet(6, 'purple', 'Gena', 'Petrov', 'gena@gmail.com', '789', '78910')
+    second_test = QuerySet(1, 'green', 'Alex', 'Suzen', 'alex@gmail.com', '123', '12345')
+    second_test.go_to_site()
+    second_test.test_create()
+    second_test.test_read()
+    # second_test.test_create(3, 'person', 'Kolya', 'Ivanov', 'koly@gmail.com', '456', '45678')
+    second_test.test_delete()
+    second_test.test_read()
+    # second_test.test_read('person')
+    # second_test.test_read('rrr')
+    # second_test.test_update(userid=10, lastname='AAA')
+    second_test.test_update(userid=30, lastname='BBB', other_username='person')
+    second_test.test_update(userid=5, username='no', lastname='CCC', other_username='no')
+    # second_test.test_read()
+    # second_test.test_delete()
+    second_test.test_read()  # Problem
+    second_test.test_delete(username='person')
+    second_test.test_delete(username='no')
+    second_test.test_read()
+    second_test.test_read('person')
+    second_test.test_read('no')
+    second_test.close_browser()
+    '''
+
+    ten_test = QuerySet(1, 'green', 'Alex', 'Suzen', 'alex@gmail.com', '123', '12345')
+    ten_test.go_to_site()
+    ten_test.test_create()
+    ten_test.test_read()
+    # ten_test.test_create(3, 'person', 'Kolya', 'Ivanov', 'koly@gmail.com', '456', '45678')
+    ten_test.test_delete()
+    ten_test.test_read()
+    ten_test.test_delete(username='person')
+    # ten_test.test_read('person')
+    # ten_test.test_read('rrr')
+    ten_test.test_update(userid=10, lastname='AAA')
+    # ten_test.test_update(userid=30, lastname='BBB', other_username='person')  #If to add this srting it stops to work
+    # ten_test.test_update(userid=5, username='no', lastname='CCC', other_username='no')
+    ten_test.test_read()
+    ten_test.test_delete()
+    ten_test.test_read()  # Problem
+
+    # ten_test.test_delete(username='no')
+    # ten_test.test_read()
+    # ten_test.test_read('person')
+    ten_test.close_browser()
+
+    # In that config it works

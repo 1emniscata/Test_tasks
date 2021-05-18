@@ -1,7 +1,7 @@
-example = ['a', 'b', 'c', 'd', 'e']
+example = ['a', 'b', 'c', 'd', 'c']
 
 
-def find_repetetion(x):
+def find_repetition(x):
     new_list = []
     for i in x:
         if i not in new_list:
@@ -10,5 +10,5 @@ def find_repetetion(x):
             return i
 
 
-a = find_repetetion(example)
+a = find_repetition(example)
 print(a)
