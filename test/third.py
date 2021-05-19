@@ -1,3 +1,10 @@
+"""
+This module can convert:
+- Celsius to Fahrenheit temperature;
+- meters to feet;
+- ounces to grams.
+"""
+
 import datetime
 import sys
 import traceback
@@ -11,7 +18,10 @@ from selenium.common.exceptions import ElementClickInterceptedException
 
 class Converter:
     """
-    A class for carrying out a CRUD operation test for testing the endpoint "user".
+    A class for converting three things:
+    - Celsius to Fahrenheit temperature;
+    - meters to feet;
+    - ounces to grams.
 
     ...
 
@@ -54,7 +64,10 @@ class Converter:
         self.browser.execute_script('window.scrollTo(0,document.body.scrollHeight);')
         self.browser.implicitly_wait(3)
 
-    def check_value(self, value):
+    @staticmethod
+    def check_value(value):
+        """Checks whether the value is number or not."""
+
         if type(value) not in (int, float, None):
             return False
         else:
@@ -78,7 +91,7 @@ class Converter:
                     cel_input.send_keys(value)
                 else:
                     print('Testing of conversion: Celsius to Fahrenheit temperature')
-                    print(f'Incorrect value "{value}". You have to use only numbers.')
+                    print(f'!!!Incorrect value "{value}". You have to use only numbers.')
                     print('')
                     self.browser.get(self.__site)
                     return None
@@ -120,7 +133,7 @@ class Converter:
                     met_input.send_keys(value)
                 else:
                     print('Testing of conversion: meters to feet')
-                    print(f'Incorrect value "{value}". You have to use only numbers.')
+                    print(f'!!!Incorrect value "{value}". You have to use only numbers.')
                     print('')
                     self.browser.get(self.__site)
                     return None
@@ -170,7 +183,7 @@ class Converter:
                     ounces_input.send_keys(value)
                 else:
                     print('Testing of conversion: ounces to grams')
-                    print(f'Incorrect value "{value}". You have to use only numbers.')
+                    print(f'!!!Incorrect value "{value}". You have to use only numbers.')
                     print('')
                     self.browser.get(self.__site)
                     return None
@@ -203,18 +216,18 @@ class Converter:
         finish_time = datetime.datetime.now()
         print('-' * 40)
         print('Spent time:', finish_time - self.start_time)
-        # print("I closed Chrome browser")
 
 
 if __name__ == '__main__':
     first_test = Converter()
     first_test.go_to_site()
     first_test.celsius_to_fahrenheit()
-    first_test.meters_to_feet('f')
-    first_test.ounces_to_grams()
     first_test.celsius_to_fahrenheit(100)
-    first_test.celsius_to_fahrenheit('f')
-    first_test.ounces_to_grams(20)
-    first_test.ounces_to_grams('f')
+    first_test.celsius_to_fahrenheit('cf')
+    first_test.meters_to_feet()
     first_test.meters_to_feet(10)
+    first_test.meters_to_feet('mf')
+    first_test.ounces_to_grams()
+    first_test.ounces_to_grams(20)
+    first_test.ounces_to_grams('og')
     first_test.close_browser()
