@@ -1,2 +1,2 @@
-# Test_tasks_1_2
+# Test_tasks
 The repository with the first and second test code tasks.
