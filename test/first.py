@@ -87,12 +87,13 @@ class QuerySet:
                     password=None, phone=None):
         """
         Checks if a brand new user can be created.
-        Prints that test passed successfully in case if the code of response == 200.
+        Prints that test passed successfully if the code of response == 200.
         """
 
         try:
             if username is not None:
                 self.list_of_users.append(username)
+
             create_div = '/html/body/div[1]/section/div[2]/div[2]/div[4]/section/div/span[3]/div/' \
                          'div/div/span[8]/div/div'
             self.browser.find_element_by_xpath(create_div).click()
@@ -110,6 +111,7 @@ class QuerySet:
             model_data_str_old = model_data.text
             model_data_json = json.loads(model_data_str_old)
             # print(model_data_json)
+
             fields_list = ["id", "username", "firstName", "lastName", "email", "password", "phone"]
             args_list = [self.__id, self.__username, self.__firstname, self.__lastname,
                          self.__email, self.__password, self.__phone]
@@ -139,13 +141,11 @@ class QuerySet:
             if code == '200':
                 print('---Test CREATE passed successfully')
                 print(f'The user <{model_data_json[fields_list[1]]}> created')
-                print('')
             elif code == '400':
                 print(f'Invalid username supplied for <{model_data_json[fields_list[1]]}>')
-                print('')
             elif code == '404':
                 print(f'User <{model_data_json[fields_list[1]]}> not found')
-                print('')
+            print('')
 
             cancel_button_link = '/html/body/div[1]/section/div[2]/div[2]/div[4]/section/div/' \
                                  'span[3]/div/div/div/span[8]/div/div[2]/div/div[2]/div[1]/' \
@@ -170,7 +170,7 @@ class QuerySet:
     def test_read(self, username=None):
         """
         Checks if a user can be got.
-        Prints that test passed successfully in case if the code of response == 200.
+        Prints that test passed successfully if the code of response == 200.
         """
 
         try:
@@ -211,17 +211,15 @@ class QuerySet:
             if code == '200':
                 print('---Test READ passed successfully')
                 print(f'The user <{username_for_print}> is accessible')
-                print('')
             elif code == '400':
                 print(f'Invalid username supplied for <{username_for_print}>')
-                print('')
             elif code == '404':
                 print('WARNING ' * 7)
                 print('!!!Test READ failed')
                 print(f'User <{username_for_print}> not found')
                 # print('')
                 print('WARNING ' * 7)
-                print('')
+            print('')
 
             cancel_button_link = '/html/body/div/section/div[2]/div[2]/div[4]/section/div/' \
                                  'span[3]/div/div/div/span[2]/div/div[2]/div/div[1]/div[1]/' \
@@ -297,8 +295,8 @@ class QuerySet:
         Checks if a user can be updated.
         Prints that test passed successfully if the code of response == 200.
 
-        Once a user was created it can be updated even it was deleted after a creation.
-        If a user wasn't been created the "test_update" function creates it.
+        Once a user was created it can be updated even if it was deleted after a creation.
+        If the user wasn't created the "test_update" function creates it.
         """
 
         try:
@@ -333,6 +331,7 @@ class QuerySet:
             model_data_str_old = model_data.text
             model_data_json = json.loads(model_data_str_old)
             # print(model_data_json)
+
             fields_list = ["id", "username", "firstName", "lastName", "email",
                            "password", "phone"]
             args_list = [self.__id, self.__username, self.__firstname, self.__lastname,
@@ -369,17 +368,15 @@ class QuerySet:
                 else:
                     print("---!!!Test UPDATE passed, but the user didn't exist before")
                     print(f'The user <{username_for_print}> has been created')
-                print('')
             elif code[:3] == '400':
                 print(f'Invalid username supplied for <{username_for_print}>')
-                print('')
             elif code[:3] == '404':  # What's the need in it there?
                 print('WARNING ' * 7)
                 print('!!!Test UPDATE failed')
                 print(f'User <{username_for_print}> not found')
                 # print('')
                 print('WARNING ' * 7)
-                print('')
+            print('')
 
             cancel_button_link = '/html/body/div/section/div[2]/div[2]/div[4]/section/' \
                                  'div/span[3]/div/div/div/span[3]/div/div[2]/div/div[2]/' \
@@ -404,7 +401,7 @@ class QuerySet:
     def test_delete(self, username=None):
         """
         Checks if a user can be deleted.
-        Prints that test passed successfully in case if the code of response == 200.
+        Prints that test passed successfully if the code of response == 200.
         """
 
         try:
@@ -502,7 +499,7 @@ if __name__ == '__main__':
     ten_test.test_delete(username='person')
     ten_test.test_read()
     ten_test.test_delete()
-    ten_test.test_read()  # Problem
+    ten_test.test_read()
     ten_test.test_read(username='no')
     ten_test.test_delete(username='no')
     ten_test.test_read(username='no')
